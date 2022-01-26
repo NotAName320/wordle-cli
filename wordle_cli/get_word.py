@@ -1,6 +1,7 @@
 import datetime
 
-from .wordlist import word_list
+from legal_words import legal_words
+from wordlist import word_list
 
 
 def date_diff():
@@ -11,6 +12,10 @@ def date_diff():
 
 def get_word():
     return word_list[date_diff() % len(word_list)]
+
+
+def word_allowed(word):
+    return word in legal_words or word in word_list
 
 
 if __name__ == "__main__":
