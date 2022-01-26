@@ -1,6 +1,6 @@
 import pyperclip
 
-from get_word import get_word, date_diff
+from .get_word import get_word, date_diff
 
 
 if __name__ == '__main__':
@@ -22,5 +22,3 @@ if __name__ == '__main__':
             pyperclip.copy(f'Wordle {date_diff()} {6-guesses_left}/6\n\n{copy_string}')
             print(f'{tile_correct*6}\nCorrect! The word was {today_word.upper()}.\nResults copied to clipboard!')
             break
-
-

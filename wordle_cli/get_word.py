@@ -1,6 +1,6 @@
 import datetime
 
-from wordlist import word_list
+from .wordlist import word_list
 
 
 def date_diff():
