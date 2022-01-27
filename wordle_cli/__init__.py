@@ -1,57 +1,39 @@
-import argparse
+import datetime
+from random import choice
 
-import colors
-import pyperclip
-
-from get_word import get_word, date_diff, word_list, word_allowed
-from legal_words import legal_words
+from .legal_words import legal_words
+from .wordlist import word_list
 
 
-if __name__ == '__main__':
-    tile_correct, tile_present, tile_absent = '🟩', '🟨', '⬛'
-    today_word = get_word()
+def date_diff():
+    wordle_start = datetime.date(2021, 6, 19)
+    today = datetime.date.today()
+    return (today - wordle_start).days
 
-    guesses_left = 6
-    copy_string = ''
-    letters_correct = []
-    letters_present = []
-    while True:
-        keyboard = ''
-        for let in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-            if let.lower() in letters_correct:
-                keyboard += colors.color(let, bg="green")
-            elif let.lower() in letters_present:
-                keyboard += colors.color(let, bg="yellow")
-            else:
-                keyboard += let
-        print(keyboard)
-        while True:
-            guess = input(f'Enter a guess ({guesses_left} tries left): ').lower()
-            if guess.isalpha() and len(guess) == 5 and word_allowed(guess):
-                break
-            print('Invalid guess.')
-        guesses_left -= 1
 
-        round_results = ''
-        round_results_emoji = ''
+def get_word():
+    return word_list[date_diff() % len(word_list)]
+
+
+def get_random_word():
+    return choice(word_list)
+
+
+def get_specific_word(number):
+    return word_list[number % len(word_list)]
+
+
+def word_allowed(word):
+    return word in legal_words or word in word_list
+
+
+def random_word_meets_conditions(word):
+    # For Absurdle
+    def letter_match(template, word_to_try):
         for i in range(5):
-            if guess[i] == today_word[i]:
-                if guess[i] not in letters_correct:
-                    letters_correct.append(guess[i])
-                round_results += colors.color(guess[i].upper(), bg="green")
-                round_results_emoji += tile_correct
-            elif guess[i] in today_word:
-                if guess[i] not in letters_present:
-                    letters_present.append(guess[i])
-                round_results += colors.color(guess[i].upper(), bg="yellow")
-                round_results_emoji += tile_present
-            else:
-                round_results += guess[i].upper()
-                round_results_emoji += tile_absent
-        copy_string += round_results_emoji + '\n'
-        print(round_results)
-
-        if guess == today_word:
-            pyperclip.copy(f'Wordle {date_diff()} {6-guesses_left}/6\n\n{copy_string}')
-            print(f'Correct! The word was {today_word.upper()}.\nResults copied to clipboard!')
-            break
+            if template[i] == '-':
+                continue
+            if template[i] != word_to_try[i]:
+                return False
+        return True
+    return choice([x for x in word_list if letter_match(word, x)])
